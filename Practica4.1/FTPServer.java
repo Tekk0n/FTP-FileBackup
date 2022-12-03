@@ -138,7 +138,7 @@ public class FTPServer {
     private static void BorradoRecursivo(FTPClient cliente) throws IOException {
         FTPFile[] files = cliente.listFiles();
         for (FTPFile file : files) {
-            System.out.printf("Deleting remote %s: %s %n", file.isDirectory() ? "Folder" : "File", file.getName());
+            System.out.printf("Deleting remote %s: %s %n", file.isDirectory() ? "Folder" : "File", file);
             if (file.isDirectory()) {
                 cliente.changeWorkingDirectory(cliente.printWorkingDirectory() + "/" + file.getName());
                 BorradoRecursivo(cliente);
