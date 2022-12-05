@@ -21,13 +21,19 @@ public class FTPServer {
         FTPClient cliente = new FTPClient();
 
         //2.Conecta a local host.
-        cliente.connect(HOST);
+        try {
+            cliente.connect(HOST);
+        } catch (Exception e) {
+            System.err.println("(" + cliente.getReplyCode() + ").Connection error. No host.");
+            return;
+        }
 
         //3.Comprueba si la conexión es correcta.
         if (FTPReply.isPositiveCompletion(cliente.getReplyCode()))
             System.out.println("(" + cliente.getReplyCode() + ").Reply Code Possitive. Host Reached.");
         else {
-            System.out.println("(" + cliente.getReplyCode() + ").Connection error.");
+            System.err.println("(" + cliente.getReplyCode() + ").Connection error. No positive completion.");
+            return;
         }
 
         //4.Cambia modo pasivo.
@@ -90,7 +96,6 @@ public class FTPServer {
         //16.Haz logout.
         cliente.logout();
     }
-
 
 
     //Éste método permite listar únicamente los ficheros de la raíz (sin directorios, no recursivo)
