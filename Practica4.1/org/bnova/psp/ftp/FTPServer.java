@@ -1,9 +1,11 @@
+package org.bnova.psp.ftp;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,19 +15,19 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class FTPServer {
-    private final static String HOST = "127.0.0.1";
     final private static Path FILEPATH = Paths.get(System.getProperty("user.dir"), "PSP-FTP", "files");
 
     public static void main(String[] args) throws IOException {
+
         //1.Instancia la clase FTPClient.
         FTPClient cliente = new FTPClient();
 
         //2.Conecta a local host.
         try {
-            cliente.connect(HOST);
+            cliente.connect(InetAddress.getLocalHost());
         } catch (Exception e) {
             System.err.println("(" + cliente.getReplyCode() + ").Connection error. No host.");
-            return;
+            System.exit(1);
         }
 
         //3.Comprueba si la conexión es correcta.
@@ -33,7 +35,7 @@ public class FTPServer {
             System.out.println("(" + cliente.getReplyCode() + ").Reply Code Possitive. Host Reached.");
         else {
             System.err.println("(" + cliente.getReplyCode() + ").Connection error. No positive completion.");
-            return;
+            System.exit(2);
         }
 
         //4.Cambia modo pasivo.
@@ -95,6 +97,7 @@ public class FTPServer {
 
         //16.Haz logout.
         cliente.logout();
+        cliente.disconnect();
     }
 
 
@@ -114,8 +117,8 @@ public class FTPServer {
     static void ListadoRecursivo(FTPClient cliente) throws IOException {
         System.out.printf("Current remote folder is: %s %n", cliente.printWorkingDirectory());
         FTPFile[] files = cliente.listFiles();
-/*        if (files.length == 0)
-            System.out.println("No files.");*/
+        if (files.length == 0)
+            System.out.println("No files.");
         for (FTPFile file : files) {
             System.out.printf("%s %s %n", file.getName(), file.isDirectory() ? "[Directorio]" : "[Fichero]");
             if (file.isDirectory()) {
